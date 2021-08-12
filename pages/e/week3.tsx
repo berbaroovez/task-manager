@@ -1,20 +1,22 @@
-import { useState, useRef, FormEvent } from "react";
+import { useState, useRef, FormEvent, ChangeEvent } from "react";
 import styled from "styled-components";
 import { supabase } from "../../util/initSupabase";
 import { useAuth } from "../../util/Auth";
+import Router from "next/router";
 const Week3 = () => {
+  const [loading, setLoading] = useState(false);
   const file1Ref = useRef<HTMLInputElement>(null);
   const file2Ref = useRef<HTMLInputElement>(null);
   const file3Ref = useRef<HTMLInputElement>(null);
 
-  // const [file1, setFile1] = useState<File | null>(null);
-  // const [file2, setFile2] = useState<File | null>(null);
-  // const [file3, setFile3] = useState<File | null>(null);
+  const [file1, setFile1] = useState<string | null>(null);
+  const [file2, setFile2] = useState<string | null>(null);
+  const [file3, setFile3] = useState<string | null>(null);
   const { user } = useAuth();
   const handleSumbit = async (e: FormEvent) => {
     e.preventDefault();
     const filePathArray = [];
-
+    setLoading(true);
     for (let i = 1; i <= 3; i++) {
       const user = supabase.auth.user();
       const file = eval(`file${i}Ref`)!.current!.files![0];
@@ -43,12 +45,26 @@ const Week3 = () => {
 
     console.log(`data `, data);
     console.log("Error,", error);
+    setLoading(false);
+    Router.push("/dashboard");
   };
 
   const testfunction = async () => {
     const { data, error } = await supabase.storage.createBucket("avatars", {
       public: true,
     });
+  };
+
+  const onPhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      if (e.target.name === "file-1") {
+        setFile1(URL.createObjectURL(e.target.files[0]));
+      } else if (e.target.name === "file-2") {
+        setFile2(URL.createObjectURL(e.target.files[0]));
+      } else {
+        setFile3(URL.createObjectURL(e.target.files[0]));
+      }
+    }
   };
   return (
     <FormContainer>
@@ -66,8 +82,11 @@ const Week3 = () => {
             id="file-1"
             accept="image/png, image/jpeg"
             ref={file1Ref}
+            onChange={onPhotoChange}
           />
+          {file1 && <img src={file1} />}
         </TaskDiv>
+
         <TaskDiv>
           <label htmlFor="file-2">
             Make the Task Manager laugh. Biggest laugh wins
@@ -78,7 +97,9 @@ const Week3 = () => {
             id="file-2"
             accept="image/* video/*"
             ref={file2Ref}
+            onChange={onPhotoChange}
           />
+          {file2 && <img src={file2} />}
         </TaskDiv>
         <TaskDiv>
           <label htmlFor="file-3">
@@ -90,9 +111,11 @@ const Week3 = () => {
             id="file-3"
             accept="image/* video/*"
             ref={file3Ref}
+            onChange={onPhotoChange}
           />
+          {file3 && <img src={file3} />}
         </TaskDiv>
-        <button type="submit">Submit</button>
+        <button type="submit">{loading ? "Submitting...." : "Submit"}</button>
       </form>
     </FormContainer>
   );
