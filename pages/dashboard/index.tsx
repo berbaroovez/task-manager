@@ -33,7 +33,10 @@ export default function Dashboard() {
   if (!user)
     return (
       <div>
-        You are not signed in please sign in <a onClick={signIn}>here</a>
+        You are not signed in please sign in{" "}
+        <a onClick={signIn}>
+          <Here>here</Here>
+        </a>
       </div>
     );
 
@@ -103,4 +106,8 @@ const EventDiv = styled.div`
 const Iconp = styled.p`
   text-align: center;
   font-size: 30px;
+`;
+
+const Here = styled.span`
+  color: red;
 `;
