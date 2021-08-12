@@ -17,22 +17,31 @@ const Week3 = () => {
     e.preventDefault();
     const filePathArray = [];
     setLoading(true);
+    let file: File | null = null;
     for (let i = 1; i <= 3; i++) {
       const user = supabase.auth.user();
-      const file = eval(`file${i}Ref`)!.current!.files![0];
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${user?.id}${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      if (eval(`file${i}Ref`).current) {
+        if (eval(`file${i}Ref`).current.files) {
+          file = eval(`file${i}Ref`)!.current!.files![0];
+        }
+      }
 
-      // const file = file1Ref!.current!.files![0];
-      const { data, error } = await supabase.storage
-        .from("files")
-        .upload(filePath, file);
-      console.log(`data ${i}`, data);
-      console.log("Error,", error);
+      if (file) {
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${user?.id}${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+        // const file = file1Ref!.current!.files![0];
+        const { data, error } = await supabase.storage
+          .from("files")
+          .upload(filePath, file);
+        console.log(`data ${i}`, data);
+        console.log("Error,", error);
 
-      if (!error && data) {
-        filePathArray.push(data.Key);
+        if (!error && data) {
+          filePathArray.push(data.Key);
+        }
+      } else {
+        filePathArray.push("null");
       }
     }
 
