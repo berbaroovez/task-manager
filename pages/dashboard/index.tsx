@@ -41,9 +41,9 @@ export default function Dashboard() {
     <div>
       <DashboardDiv>
         <h2>Welcome to TaskManager</h2>
+        <h3>{user.user_metadata.full_name}, your tasks are below </h3>
         <p>The Dashboard is currently under construction</p>
         <Iconp>🚧</Iconp>
-        <button onClick={getEvents}>Get Events</button>
 
         {events
           ? events.map((event) => (
@@ -77,7 +77,10 @@ export default function Dashboard() {
 }
 
 const DashboardDiv = styled.div`
-  width: 100%;
+  width: 800px;
+  margin: 0 auto;
+  display: grid;
+  justify-content: center;
 `;
 
 const EventDiv = styled.div`
