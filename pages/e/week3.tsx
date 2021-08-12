@@ -68,8 +68,8 @@ const Week3 = () => {
   };
   return (
     <FormContainer>
-      <h1>{user.id}</h1>
-      <button onClick={testfunction}>Submit</button>
+      {/* <h1>{user.id}</h1>
+      <button onClick={testfunction}>Submit</button> */}
       <h1>Week 3 Tasks </h1>
       <form onSubmit={handleSumbit}>
         <TaskDiv>
