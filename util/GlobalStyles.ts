@@ -1,6 +1,14 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
+
+html {
+  --section-padding: 20px;
+  --section-margin: 20px;
+
+  --large-margin: 40px;
+}
+
 /* Box sizing rules */
 *,
 *::before,
