@@ -17,7 +17,7 @@ const Week3 = () => {
     e.preventDefault();
     const filePathArray = [];
     setLoading(true);
-    let file: File | null = null;
+    let file: File | undefined = undefined;
     for (let i = 1; i <= 3; i++) {
       const user = supabase.auth.user();
       if (eval(`file${i}Ref`).current) {

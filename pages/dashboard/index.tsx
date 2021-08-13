@@ -5,16 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { supabase } from "../../util/initSupabase";
-
-type EventType = {
-  id: number;
-  created_at: Date;
-  name: string;
-  tasks: string[];
-  end_date: Date;
-  slug: string;
-};
-
+import { EventType } from "../../util/GlobalTypes";
 export default function Dashboard() {
   const { user, signIn, signOut } = useAuth();
   const [events, setEvents] = useState<EventType[] | null>(null);
