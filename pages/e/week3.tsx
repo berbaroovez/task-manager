@@ -38,7 +38,7 @@ const Week3 = () => {
         console.log("Error,", error);
 
         if (!error && data) {
-          filePathArray.push(data.Key);
+          filePathArray.push(filePath);
         }
       } else {
         filePathArray.push("null");
