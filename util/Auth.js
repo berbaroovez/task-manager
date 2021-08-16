@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
     // Listen for changes on auth state (logged in, signed out, etc.)
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log(event);
+        console.log("event");
         const tempUser = session?.user;
         if (event === "SIGNED_IN") {
           console.log("SIGNED_IN");
@@ -30,9 +30,10 @@ export function AuthProvider({ children }) {
               username: tempUser.user_metadata?.full_name,
               email: tempUser.email,
             };
-            let { error } = await supabase.from("profiles").upsert(updates, {
-              returning: "minimal", // Don't return the value after inserting
-            });
+            let { data, error } = await supabase.from("profiles").upsert(
+              updates // Don't return the value after inserting
+            );
+            // console.log("AUTHJ DATa", data);
             if (error) {
               console.log(error);
               throw error;

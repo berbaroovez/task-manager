@@ -15,53 +15,60 @@ const Week3 = () => {
   const { user } = useAuth();
   const handleSumbit = async (e: FormEvent) => {
     e.preventDefault();
-    const filePathArray = [];
-    setLoading(true);
-    let file: File | undefined = undefined;
-    for (let i = 1; i <= 3; i++) {
-      const user = supabase.auth.user();
-      if (eval(`file${i}Ref`).current) {
-        if (eval(`file${i}Ref`).current.files) {
-          file = eval(`file${i}Ref`)!.current!.files![0];
-        }
-      }
 
-      if (file) {
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${user?.id}${Math.random()}.${fileExt}`;
-        const filePath = `${fileName}`;
-        // const file = file1Ref!.current!.files![0];
-        const { data, error } = await supabase.storage
-          .from("files")
-          .upload(filePath, file);
-        console.log(`data ${i}`, data);
-        console.log("Error,", error);
+    const hasSubmited = await supabase
+      .from("profiles")
+      .select("*")
+      .match({ id: user.id });
+    console.log(hasSubmited.error);
 
-        if (!error && data) {
-          filePathArray.push(filePath);
-        }
+    if (hasSubmited.data) {
+      if (hasSubmited.data.length > 0) {
+        alert("You have already submitted your tasks!");
       } else {
-        filePathArray.push("null");
+        const filePathArray = [];
+        setLoading(true);
+        let file: File | undefined = undefined;
+        for (let i = 1; i <= 3; i++) {
+          const user = supabase.auth.user();
+          if (eval(`file${i}Ref`).current) {
+            if (eval(`file${i}Ref`).current.files) {
+              file = eval(`file${i}Ref`)!.current!.files![0];
+            }
+          }
+
+          if (file) {
+            const fileExt = file.name.split(".").pop();
+            const fileName = `${user?.id}${Math.random()}.${fileExt}`;
+            const filePath = `${fileName}`;
+            // const file = file1Ref!.current!.files![0];
+            const { data, error } = await supabase.storage
+              .from("files")
+              .upload(filePath, file);
+            console.log(`data ${i}`, data);
+            console.log("Error,", error);
+
+            if (!error && data) {
+              filePathArray.push(filePath);
+            }
+          } else {
+            filePathArray.push("null");
+          }
+        }
+
+        // const filePathArray = ["Yolo", "pasata"];
+        const { data, error } = await supabase
+          .from("submissions")
+          .insert([
+            { file_paths: filePathArray, submitted_by: user.id, event_id: 1 },
+          ]);
+
+        console.log(`data `, data);
+        console.log("Error,", error);
+        setLoading(false);
+        Router.push("/dashboard");
       }
     }
-
-    // const filePathArray = ["Yolo", "pasata"];
-    const { data, error } = await supabase
-      .from("submissions")
-      .insert([
-        { file_paths: filePathArray, submitted_by: user.id, event_id: 1 },
-      ]);
-
-    console.log(`data `, data);
-    console.log("Error,", error);
-    setLoading(false);
-    Router.push("/dashboard");
-  };
-
-  const testfunction = async () => {
-    const { data, error } = await supabase.storage.createBucket("avatars", {
-      public: true,
-    });
   };
 
   const onPhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -124,6 +131,11 @@ const Week3 = () => {
           />
           {file3 && <img src={file3} />}
         </TaskDiv>
+        <WarningText>
+          You can only submit once so make sure you are submitting everything
+          you want. If you have messed up contact <span>Berbaroovez#0001</span>{" "}
+          on discord{" "}
+        </WarningText>
         <button type="submit">{loading ? "Submitting...." : "Submit"}</button>
       </form>
     </FormContainer>
@@ -143,6 +155,12 @@ const FormContainer = styled.div`
   display: grid;
   justify-content: center;
   text-align: center;
+`;
+
+const WarningText = styled.p`
+  color: red;
+  width: 400px;
+  font-size: 0.8em;
 `;
 
 export default Week3;

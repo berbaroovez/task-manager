@@ -14,6 +14,14 @@ type SubmissionType = {
   file_paths: string[];
   submitted_by: number;
   files?: FileInfo[];
+  points: number[];
+  //we did a plur here because thats the name of the table
+  profiles?: { username: string };
+};
+
+type EventInfoAndSubmissionType = {
+  eventInfo: EventType;
+  submissions: SubmissionType[];
 };
 
 type FileInfo = {
@@ -21,4 +29,4 @@ type FileInfo = {
   type: "image" | "video" | null;
 };
 
-export type { EventType, SubmissionType };
+export type { EventType, SubmissionType, EventInfoAndSubmissionType };

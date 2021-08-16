@@ -1,12 +1,22 @@
 import { GetStaticProps, GetStaticPaths, GetServerSideProps } from "next";
-import { EventType, SubmissionType } from "../../util/GlobalTypes";
+import Image from "next/image";
+import {
+  EventType,
+  SubmissionType,
+  EventInfoAndSubmissionType,
+} from "../../util/GlobalTypes";
 import { supabase } from "../../util/initSupabase";
 import { useEffect, useState } from "react";
 // import { PostgrestResponse, PostgrestError } from "@subabase/postgrest-js";
 import { FunctionComponent } from "react";
+import styled from "styled-components";
+
+import AdminView from "./../../components/AdminView";
+
+import { useAuth } from "../../util/Auth";
 
 interface SlugProps {
-  event: EventType;
+  event: EventInfoAndSubmissionType;
 }
 
 interface Username {
@@ -18,132 +28,188 @@ const Gallery: FunctionComponent<SlugProps> = ({ event }) => {
   const [submissions, setSubmissions] = useState<ExtendedSubmission[] | null>(
     null
   );
-
+  const [isAdmin, setIsAdmin] = useState(false);
   const [filesLoaded, setFilesLoaded] = useState<boolean>(false);
   const [files, setFiles] = useState<string[] | null>(null);
   const [readyToRender, setReadyToRender] = useState<boolean>(false);
+  const [showAdminView, setShowAdminView] = useState<boolean>(false);
+
+  const { user } = useAuth();
 
   useEffect(() => {
-    const getSubmissions = async () => {
-      const response = await supabase
-        .from<ExtendedSubmission>("submissions")
-        .select("*, profiles(username)")
-        .eq("event_id", event.id);
+    const checkIfAdmin = async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("admin")
+        .match({ id: user.id });
 
-      console.log("Respoonse", response.data);
-      setSubmissions(response.data);
-    };
-
-    getSubmissions();
-  }, []);
-
-  // this use effect waits until submissions have been loaded then goes through the file paths
-  // it downloads the files and then saves the urls and also if the file is a image or video so we can dispaly it properly
-  useEffect(() => {
-    const getFiles = async () => {
-      console.log("Downloading files");
-      if (submissions) {
-        submissions.forEach((submission, index) => {
-          const files: any[] = [];
-          submission.file_paths.forEach(async (file) => {
-            if (file != "null") {
-              const { data, error } = await supabase.storage
-                .from("files")
-                .download(file);
-              if (error) {
-                throw error;
-              }
-
-              let fileType;
-              if (data?.type.includes("image")) {
-                fileType = "image";
-              } else if (data?.type.includes("video")) {
-                fileType = "video";
-              } else {
-                fileType = null;
-              }
-
-              files.push({ url: URL.createObjectURL(data), type: fileType });
-            } else {
-              files.push({ url: null, type: null });
-            }
-          });
-          const tempSubmission = { ...submission };
-          tempSubmission["files"] = files;
-          const tempSubbmissionArray = [...submissions];
-
-          tempSubbmissionArray[index].files = files;
-          console.log("Temp", tempSubbmissionArray);
-          setSubmissions(tempSubbmissionArray);
-        });
+      if (data) {
+        if (data[0].admin) {
+          setIsAdmin(true);
+        }
       }
     };
-    if (submissions) {
-      if (!filesLoaded) {
-        setFilesLoaded(true);
-        getFiles();
-      }
+
+    if (user) {
+      checkIfAdmin();
     }
+  }, [user]);
 
-    console.log("Submissions updated", submissions);
-  }, [submissions]);
+  if (showAdminView) {
+    return (
+      <div>
+        <AdminView
+          eventInfo={event.eventInfo}
+          submissions={event.submissions}
+        />
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <button
-        onClick={() => {
-          console.log(submissions);
-        }}
-      >
-        {" "}
-        Event{" "}
-      </button>
+    <GalleryContainer>
+      {isAdmin && (
+        <button onClick={() => setShowAdminView(true)}>Points</button>
+      )}
 
-      <button
-        onClick={() => {
-          setReadyToRender(true);
-        }}
-      >
-        {" "}
-        Render{" "}
-      </button>
-      <h1>Hello Ther </h1>
-      {event.name}
-      {readyToRender &&
-        submissions?.map((submission) => (
-          <div key={submission.id}>
-            <h2>{submission.profiles.username}</h2>
-            {submission.files?.map((file, index) => {
-              if (file.type == "image") {
-                return <img src={file.url} />;
-              } else if (file.type == "video") {
-                return <video controls src={file.url} />;
+      <h1> {event.eventInfo.name}</h1>
+
+      {event.submissions.map((subs) => {
+        return (
+          <GalleryDiv key={subs.id}>
+            {subs.files?.map((file) => {
+              if (file.type === "image") {
+                if (file.url) {
+                  return (
+                    <img
+                      src={file.url}
+                      key={file.url}
+                      style={{ width: "400px", height: "400px" }}
+                    />
+                  );
+                }
               } else {
-                return null;
+                if (file.url) {
+                  return (
+                    <video
+                      src={file.url}
+                      key={file.url}
+                      controls
+                      style={{ width: "400px", height: "200px" }}
+                    />
+                  );
+                }
               }
-              // else if
             })}
-            {/* <p>{submission.description}</p> */}
-          </div>
-        ))}
-    </div>
+          </GalleryDiv>
+        );
+      })}
+    </GalleryContainer>
   );
 };
 
 export async function getStaticProps({ ...ctx }) {
+  const getFiles = async (submissions: ExtendedSubmission[]) => {
+    const tempSubmissions = submissions;
+    console.log("Downloading files");
+    if (tempSubmissions) {
+      for (let j = 0; j < tempSubmissions.length; j++) {
+        const files: any[] = [];
+
+        for (let i = 0; i < tempSubmissions[j].file_paths.length; i++) {
+          const temp = await getURLS(tempSubmissions[j].file_paths[i]);
+          // console.log("This is the temp", temp!.url);
+          files.push(temp);
+        }
+
+        tempSubmissions[j]["files"] = files;
+      }
+    }
+
+    return tempSubmissions;
+  };
+
+  const getURLS = async (filePath: string) => {
+    return new Promise(async (resolve, reject) => {
+      if (filePath != "null") {
+        // const { data } = await supabase.storage.from("files").download(filePath);
+
+        const { signedURL, error } = await supabase.storage
+          .from("files")
+          .createSignedUrl(filePath, 15780000);
+
+        // console.log("SIGNED URL", signedURL);
+        if (error) {
+          throw error;
+        }
+
+        let fileType;
+
+        if (signedURL) {
+          if (
+            signedURL.includes("jpeg") ||
+            signedURL.includes("jpg") ||
+            signedURL.includes("png") ||
+            signedURL.includes("gif") ||
+            signedURL.includes("webp")
+          ) {
+            fileType = "image";
+          } else if (
+            signedURL.includes("mp4") ||
+            signedURL.includes("webm") ||
+            signedURL.includes("ogg") ||
+            signedURL.includes("ogv") ||
+            signedURL.includes("avi")
+          ) {
+            fileType = "video";
+          } else {
+            fileType = null;
+          }
+
+          resolve({ url: signedURL, type: fileType });
+        }
+      } else {
+        resolve({ url: null, type: null });
+      }
+    });
+  };
+
   const { slug } = ctx.params;
   console.log("Props slug", slug);
-  const { data } = await supabase.from("TaskEvents").select().eq("slug", slug);
-  //   console.log("Props data", data);
-  //   const event = {
-  //     content: data,
-  //   };
+  //get event that matches slug
+  const { data } = await supabase
+    .from<EventType>("TaskEvents")
+    .select()
+    .eq("slug", slug);
+  let eventInfo;
 
-  return {
-    props: {
-      event: data![0],
-    },
-  };
+  if (data) {
+    eventInfo = data[0];
+    if (eventInfo) {
+      const response = await supabase
+        .from<ExtendedSubmission>("submissions")
+        .select("*, profiles(username)")
+        .eq("event_id", eventInfo.id);
+      const submissions = response.data;
+
+      if (submissions) {
+        const completedSubmissions = await getFiles(submissions);
+        const eventData: EventInfoAndSubmissionType = {
+          eventInfo: eventInfo,
+          submissions: completedSubmissions,
+        };
+
+        return {
+          props: {
+            event: eventData,
+          },
+        };
+      }
+    }
+  }
+  //get submissions that match event id
+
+  //download the files for the submissions
 }
 
 export async function getStaticPaths() {
@@ -161,3 +227,20 @@ export async function getStaticPaths() {
 }
 
 export default Gallery;
+
+const GalleryDiv = styled.div``;
+const GalleryContainer = styled.div`
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  width: 1000px;
+
+  justify-content: center;
+
+  button {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+`;
