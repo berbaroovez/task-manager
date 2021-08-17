@@ -7,6 +7,11 @@ html {
   --section-margin: 20px;
 
   --large-margin: 40px;
+
+  --red-color: #d43e3e;
+  --creme-color: #f7d1bf;
+
+  --mystery-font: "Special Elite", cursive;
 }
 
 /* Box sizing rules */
