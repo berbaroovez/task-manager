@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { supabase } from "../util/initSupabase";
 import { useAuth } from "../util/Auth";
-import { LeaderBoard } from "../components/Leaderboard";
+import { LeaderBoard } from "../components/LeaderboardTable";
 const Title = styled.h1`
   font-size: 50px;
 `;
@@ -13,21 +13,21 @@ export default function Home() {
   return (
     <IndexDiv>
       <HeroDiv>
-        <h2>Welcome to TaskManager</h2>
-        <p>
-          Its the twitch show were you get 3 challenges to compete in each week.
-          The objective is to get the most points by making the Task Manager
-          laugh
-        </p>
+        <>
+          <h1>Task Manager</h1>
+          <p>The show with weird tasks.</p>
+          <p> And even weirder submissions.</p>
+          <CTAButton onClick={signIn}>Sign Up</CTAButton>
+        </>
       </HeroDiv>
       <LeaderBoardDiv>
-        <h2>Leader Boards</h2>
-        <LeaderBoard />
+        <h2>Top Ten</h2>
+        <LeaderBoard topTen />
       </LeaderBoardDiv>
       <CallToActionDiv>
         <h2>Want to Play?</h2>
-        <p>Click below to get signed up and start competing</p>
-        <button onClick={signIn}>SignUp</button>
+        <p>Click Sign Up to get signed up and start competing</p>
+        {/* <CTAButton onClick={signIn}>Sign Up</CTAButton> */}
       </CallToActionDiv>
     </IndexDiv>
   );
@@ -49,10 +49,18 @@ const IndexDiv = styled.div`
 `;
 
 const HeroDiv = styled.div`
-  margin: var(--section-margin);
-  /* background-color: blue; */
-
+  background: linear-gradient(180deg, #d43e3e 0%, rgba(212, 62, 62, 0) 108.55%);
+  border-radius: 10px;
+  height: 300px;
   max-width: 800px;
+  h1 {
+    font-size: 5em;
+    padding: 0;
+    margin: 0;
+  }
+  p {
+    font-size: 2.2em;
+  }
   @media (min-width: 768px) {
     margin: 0 auto;
     margin-top: var(--section-margin);
@@ -70,4 +78,16 @@ const CallToActionDiv = styled.div`
   /* margin: 0 var(--section-margin); */
   width: 100%;
   margin-bottom: var(--section-padding);
+`;
+
+const CTAButton = styled.button`
+  background: #d43e3e;
+  border-radius: 10px;
+  border: 0;
+  padding: 10px 40px;
+  font-size: 1.2em;
+  color: #f7d1bf;
+  &:hover {
+    cursor: pointer;
+  }
 `;
