@@ -37,6 +37,7 @@ const IndexDiv = styled.div`
 
   font-family: "Special Elite", cursive;
   text-align: center;
+
   p {
     font-size: 0.8em;
     @media (min-width: 768px) {
@@ -49,9 +50,22 @@ const IndexDiv = styled.div`
 `;
 
 const HeroDiv = styled.div`
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
   background: linear-gradient(180deg, #d43e3e 0%, rgba(212, 62, 62, 0) 108.55%);
+  width: 80%;
+  max-width: 700px;
+  margin: 0 auto;
+  margin-bottom: 20px;
   border-radius: 10px;
-  height: 300px;
+
+  height: 200px;
+
+  p:nth-child(3) {
+    padding-bottom: 10px;
+  }
+  /*
   max-width: 800px;
   h1 {
     font-size: 5em;
@@ -60,7 +74,7 @@ const HeroDiv = styled.div`
   }
   p {
     font-size: 2.2em;
-  }
+  } */
   @media (min-width: 768px) {
     margin: 0 auto;
     margin-top: var(--section-margin);
@@ -81,11 +95,12 @@ const CallToActionDiv = styled.div`
 `;
 
 const CTAButton = styled.button`
+  align-self: center;
   background: #d43e3e;
   border-radius: 10px;
   border: 0;
   padding: 10px 40px;
-  font-size: 1.2em;
+  font-size: 1em;
   color: #f7d1bf;
   &:hover {
     cursor: pointer;

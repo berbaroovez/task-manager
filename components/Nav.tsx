@@ -85,6 +85,9 @@ const NavDiv = styled.nav<NavProps>`
     top: 5px;
     display: none;
     /* z-index: 20; */
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   height: 100%;
@@ -175,5 +178,6 @@ const ClickDiv = styled.div``;
 const OutterNavDiv = styled.div`
   height: 100%;
   background-color: var(--red-color);
+  margin-bottom: 20px;
 `;
 export { Nav };
