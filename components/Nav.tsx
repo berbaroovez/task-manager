@@ -85,12 +85,9 @@ const NavDiv = styled.nav<NavProps>`
     top: 5px;
     display: none;
     /* z-index: 20; */
-    &:hover {
-      cursor: pointer;
-    }
   }
 
-  height: 100%;
+  height: 60px;
   background-color: var(--red-color);
   display: flex;
   justify-content: space-between;
@@ -99,9 +96,8 @@ const NavDiv = styled.nav<NavProps>`
   max-width: 900px;
   margin: 0 auto;
 
-  @media (max-width: 678px) {
+  @media (max-width: 770px) {
     width: 100vw;
-    height: 50px;
 
     svg {
       display: flex;
@@ -143,7 +139,7 @@ const NavLinks = styled.ul<NavProps>`
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 770px) {
     flex-flow: column nowrap;
     background-color: var(--red-color);
     position: fixed;
@@ -178,6 +174,5 @@ const ClickDiv = styled.div``;
 const OutterNavDiv = styled.div`
   height: 100%;
   background-color: var(--red-color);
-  margin-bottom: 20px;
 `;
 export { Nav };

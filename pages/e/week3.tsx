@@ -143,8 +143,22 @@ const Week3 = () => {
 };
 
 const TaskDiv = styled.div`
-  width: 500px;
+  width: 80%;
+  max-width: 500px;
+  margin: 0 auto;
   margin-bottom: var(--large-margin);
+
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
 
   :first-of-type {
     margin-top: var(--large-margin);
@@ -159,7 +173,9 @@ const FormContainer = styled.div`
 
 const WarningText = styled.p`
   color: red;
-  width: 400px;
+  width: 80%;
+  max-width: 500px;
+  margin: 0 auto;
   font-size: 0.8em;
 `;
 
