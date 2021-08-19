@@ -57,7 +57,9 @@ export default Pastweeks;
 const EventDiv = styled.div`
   border-radius: 20px;
   background-color: #f5f5f5;
-  width: 400px;
+  width: 80%;
+  max-width: 500px;
+  margin: 0 auto;
   padding: 20px;
 
   ul {
@@ -86,10 +88,10 @@ const EventDiv = styled.div`
 `;
 
 const PastWeeksContainer = styled.div`
-  width: 800px;
-  margin: 0 auto;
-  display: grid;
-  justify-content: center;
+  /* width: 800px;
+  margin: 0 auto; */
+  /* display: grid;
+  justify-content: center; */
 
   h1 {
     text-align: center;
