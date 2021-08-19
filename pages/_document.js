@@ -36,6 +36,7 @@ export default class MyDocument extends Document {
     return (
       <Html>
         <Head>
+          <meta name="theme-color" content="#d43e3e" />
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1.0"
