@@ -56,7 +56,6 @@ const Week3 = () => {
           }
         }
 
-        // const filePathArray = ["Yolo", "pasata"];
         const { data, error } = await supabase
           .from("submissions")
           .insert([
