@@ -1,8 +1,4 @@
-import {
-  EventTypeTest,
-  SubmissionType,
-  EventInfoAndSubmissionType,
-} from "../../util/GlobalTypes";
+import { EventTypeTest } from "../../util/GlobalTypes";
 import Router from "next/router";
 import { supabase } from "../../util/initSupabase";
 import { useAuth } from "../../util/Auth";
