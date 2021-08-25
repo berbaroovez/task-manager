@@ -6,6 +6,14 @@ type EventType = {
   end_date: Date;
   slug: string;
 };
+type EventTypeTest = {
+  id: number;
+  created_at: Date;
+  name: string;
+  tasks: any;
+  end_date: Date;
+  slug: string;
+};
 
 type SubmissionType = {
   id: number;
@@ -29,4 +37,9 @@ type FileInfo = {
   type: "image" | "video" | null;
 };
 
-export type { EventType, SubmissionType, EventInfoAndSubmissionType };
+export type {
+  EventType,
+  SubmissionType,
+  EventInfoAndSubmissionType,
+  EventTypeTest,
+};

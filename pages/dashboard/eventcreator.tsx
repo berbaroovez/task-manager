@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "./../../util/initSupabase";
 
 type TaskInfo = {
   type: "file" | "text";
@@ -6,6 +7,8 @@ type TaskInfo = {
   allowedFiles: "images" | "videos" | "both" | null;
 };
 export default function EventCreator() {
+  const [eventName, setEventName] = useState("");
+  const [eventSlug, setEventSlug] = useState("");
   const [event, setEvent] = useState();
   const [tasksList, setTasksList] = useState<TaskInfo[]>([]);
 
@@ -53,13 +56,47 @@ export default function EventCreator() {
     setTasksList(tempTasksList);
   };
 
+  const createEvent = async () => {
+    // const tempArray = [...tasksList];
+
+    console.log(JSON.stringify({ task1: "test" }));
+    const { data, error } = await supabase.from("testtable2").insert([
+      {
+        name: eventName,
+        // created_at: new Date(),
+        end_date: new Date(),
+        slug: eventSlug,
+        tasks: {
+          ...tasksList,
+        },
+      },
+    ]);
+
+    console.log("data", data);
+    console.log("error", error);
+  };
+
   return (
     <div>
       <h1>Event Creator</h1>
-      <input type="text" name="eventName" placeholder="Event Name" />
+      <input
+        type="text"
+        name="eventName"
+        placeholder="Event Name"
+        onChange={(e) => {
+          setEventName(e.target.value);
+        }}
+      />
       <label htmlFor="slugName">URL Slug</label>
       <p>taskmanager.show/e/URLSLUG</p>
-      <input type="text" name="slugName" placeholder="Url Slug" />
+      <input
+        type="text"
+        name="slugName"
+        placeholder="Url Slug"
+        onChange={(e) => {
+          setEventSlug(e.target.value);
+        }}
+      />
       <button onClick={handleNewTask}>Add Task</button>
       {tasksList?.map((task, index) => {
         return (
@@ -117,6 +154,8 @@ export default function EventCreator() {
           </div>
         );
       })}
+
+      <button onClick={createEvent}>Create Event</button>
     </div>
   );
 }
