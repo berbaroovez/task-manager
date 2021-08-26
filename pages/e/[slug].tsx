@@ -30,65 +30,84 @@ const EventSubmit: FunctionComponent<EventTypeTest> = (props) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    const hasSubmited = await supabase
+      .from("testsubmissions")
+      .select("*")
+      .match({ event_id: props.id, submitted_by: user.id });
+
+    console.log("EventSubmit handleSubmit", hasSubmited.data);
+    if (hasSubmited.error) {
+      console.error(hasSubmited.error);
+    }
+
     setLoading(true);
-    const filePathArray = [];
-    let file: File | undefined = undefined;
-
-    for (let i = 0; i < itemsRef.current.length; i++) {
-      let tempAnswerObject: AnswerType = {
-        type: null,
-        data: null,
-      };
-      file = undefined;
-
-      if (itemsRef.current) {
-        if (itemsRef.current[i].files) {
-          file = itemsRef.current[i].files[0];
-        }
-      }
-
-      // 1. if its a file field then upload the file annd save the file path
-      // 2. if its a text field then save the text
-      // 3. if is an empty field then leave everything as null
-      if (file) {
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${user?.id}${Math.random()}.${fileExt}`;
-        const filePath = `${fileName}`;
-        // const file = file1Ref!.current!.files![0];
-        const { data, error } = await supabase.storage
-          .from("files")
-          .upload(filePath, file);
-        console.log(`data ${i}`, data);
-        console.log("Error,", error);
-
-        if (!error && data) {
-          tempAnswerObject.data = filePath;
-          tempAnswerObject.type = "file";
-          filePathArray.push(tempAnswerObject);
-        }
-      } else if (itemsRef.current[i].value) {
-        tempAnswerObject.type = "text";
-        tempAnswerObject.data = itemsRef.current[i].value;
-        filePathArray.push(tempAnswerObject);
+    if (hasSubmited.data) {
+      if (hasSubmited.data.length > 0) {
+        alert(
+          "You have already submitted your tasks! \n We will see you next week!"
+        );
       } else {
-        filePathArray.push(tempAnswerObject);
+        const filePathArray = [];
+        let file: File | undefined = undefined;
+
+        for (let i = 0; i < itemsRef.current.length; i++) {
+          let tempAnswerObject: AnswerType = {
+            type: null,
+            data: null,
+          };
+          file = undefined;
+
+          if (itemsRef.current) {
+            if (itemsRef.current[i].files) {
+              file = itemsRef.current[i].files[0];
+            }
+          }
+
+          // 1. if its a file field then upload the file annd save the file path
+          // 2. if its a text field then save the text
+          // 3. if is an empty field then leave everything as null
+          if (file) {
+            const fileExt = file.name.split(".").pop();
+            const fileName = `${user?.id}${Math.random()}.${fileExt}`;
+            const filePath = `${fileName}`;
+            // const file = file1Ref!.current!.files![0];
+            const { data, error } = await supabase.storage
+              .from("files")
+              .upload(filePath, file);
+            console.log(`data ${i}`, data);
+            console.log("Error,", error);
+
+            if (!error && data) {
+              tempAnswerObject.data = filePath;
+              tempAnswerObject.type = "file";
+              filePathArray.push(tempAnswerObject);
+            }
+          } else if (itemsRef.current[i].value) {
+            tempAnswerObject.type = "text";
+            tempAnswerObject.data = itemsRef.current[i].value;
+            filePathArray.push(tempAnswerObject);
+          } else {
+            filePathArray.push(tempAnswerObject);
+          }
+        }
+
+        const { data, error } = await supabase.from("testsubmissions").insert([
+          {
+            anwsers: {
+              ...filePathArray,
+            },
+            submitted_by: user.id,
+            event_id: props.id,
+          },
+        ]);
+
+        console.log(`data `, data);
+        console.log("Error,", error);
+        setLoading(false);
+        Router.push("/dashboard");
       }
     }
 
-    const { data, error } = await supabase.from("testsubmissions").insert([
-      {
-        anwsers: {
-          ...filePathArray,
-        },
-        submitted_by: user.id,
-        event_id: props.id,
-      },
-    ]);
-
-    console.log(`data `, data);
-    console.log("Error,", error);
-    setLoading(false);
-    Router.push("/dashboard");
     // console.log("filePathArray", filePathArray);
   };
 
