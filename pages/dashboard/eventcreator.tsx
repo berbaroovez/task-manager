@@ -9,7 +9,6 @@ type TaskInfo = {
 export default function EventCreator() {
   const [eventName, setEventName] = useState("");
   const [eventSlug, setEventSlug] = useState("");
-  const [event, setEvent] = useState();
   const [tasksList, setTasksList] = useState<TaskInfo[]>([]);
 
   const handleNewTask = () => {
@@ -28,7 +27,6 @@ export default function EventCreator() {
     index: number
   ) => {
     const tempTasksList = [...tasksList];
-    // console.log(e.target.name + "  " + e.target.value);
     if (e.target.name === "type") {
       if (e.target.value === "file") {
         tempTasksList[index].type = "file";
