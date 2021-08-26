@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { supabase } from "../../util/initSupabase";
 import { EventType } from "../../util/GlobalTypes";
+import SignIn from "../../components/SignIn";
 export default function Dashboard() {
   const { user, signIn, signOut } = useAuth();
   const [events, setEvents] = useState<EventType[] | null>(null);
@@ -21,15 +22,9 @@ export default function Dashboard() {
     console.log(temp.data);
   };
 
-  if (!user)
-    return (
-      <div>
-        You are not signed in please sign in{" "}
-        <a onClick={signIn}>
-          <Here>here</Here>
-        </a>
-      </div>
-    );
+  if (!user) {
+    return <SignIn />;
+  }
 
   return (
     <DashboardDiv>

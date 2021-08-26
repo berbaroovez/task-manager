@@ -12,20 +12,6 @@ const Nav = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    /* Inside of a "useEffect" hook add an event listener that updates
-       the "width" state variable when the window size changes */
-    window.addEventListener("resize", () => {
-      if (window.innerWidth >= 1024) {
-        setIsOpen(true);
-      }
-    });
-
-    /* passing an empty array as the dependencies of the effect will cause this
-       effect to only run when the component mounts, and not each time it updates.
-       We only want the listener to be added once */
-  }, []);
-
   return (
     <OutterNavDiv>
       <NavDiv open={isOpen}>
@@ -98,6 +84,7 @@ const NavDiv = styled.nav<NavProps>`
 
   @media (max-width: 770px) {
     width: 100vw;
+    margin-bottom: 20px;
 
     svg {
       display: flex;
